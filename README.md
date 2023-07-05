@@ -1,2 +1,2 @@
 # QuickStockInfo-SlackBot
-Slackbot that returns current stock information
+Slackbot that returns current stock information.
