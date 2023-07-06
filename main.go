@@ -46,4 +46,15 @@ func main() {
 			}
 		},
 	})
+
+	go func() {
+		defer wg.Done()
+		err := bot.Listen(context.Background())
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	wg.Wait()
 }
+
