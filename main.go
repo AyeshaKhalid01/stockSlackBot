@@ -58,3 +58,66 @@ func main() {
 	wg.Wait()
 }
 
+
+const (
+	baseURL = "https://www.alphavantage.co/query"
+)
+
+func stocks(input string) []string {
+	var stockInfo []string
+	flag.Parse()
+	if len(input) == 0 {
+		log.Fatalf("Input one stock symbol", os.Args[0])
+	}
+
+	apiKey := "" // Replace with your actual API key
+
+	// Build the API URL
+	url := fmt.Sprintf("%s?function=GLOBAL_QUOTE&symbol=%s&apikey=%s", baseURL, input, apiKey)
+
+	// Send the HTTP request
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Parse the JSON response
+	var result map[string]interface{}
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		fmt.Println("failed")
+		log.Fatal(err)
+	}
+
+	// Check if the API call was successful
+	if _, ok := result["Global Quote"]; !ok {
+		log.Printf("Failed to fetch stock quote for symbol: %s", input)
+		return []string{fmt.Sprintf("Failed to fetch stock quote for symbol, check your internet connection: %s", input)}
+	}
+
+	// Extract the relevant information from the response
+	quote := result["Global Quote"].(map[string]interface{})
+	// Check if the API call was successful
+	if len(quote) == 0 {
+		log.Printf("Are you sure you entered the correct stock symbol: %s", input)
+		return []string{fmt.Sprintf("Are you sure you entered the correct stock symbol, cannot find symbol: %s", input)}
+	}
+
+	currentPrice := quote["05. price"].(string)
+	highPrice := quote["03. high"].(string)
+	lowPrice := quote["04. low"].(string)
+
+	stockInfo = append(stockInfo, fmt.Sprintf("Symbol: %s\n", input))
+	stockInfo = append(stockInfo, fmt.Sprintf("Current Price: $%s\n", currentPrice))
+	stockInfo = append(stockInfo, fmt.Sprintf("52 Week High: $%s\n", highPrice))
+	stockInfo = append(stockInfo, fmt.Sprintf("52 Week Low: $%s\n", lowPrice))
+	return stockInfo
+}
+
