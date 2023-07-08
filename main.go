@@ -24,7 +24,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	bot.Command("ping", &slacker.CommandDefinition{
+	bot.Command("stock", &slacker.CommandDefinition{
 		Handler: func(ctx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter) {
 			// Get the event text from the context
 			eventText := ctx.Event().Text
@@ -33,7 +33,7 @@ func main() {
 			args := strings.Split(eventText, " ")[1:]
 
 			// Check if there are any arguments
-			if len(args) > 0 {
+			if len(args) > 1 {
 				// Process the arguments here
 				for _, arg := range args {
 					result := stocks(arg)
@@ -42,7 +42,7 @@ func main() {
 					}
 				}
 			} else {
-				response.Reply("No arguments specified.")
+				response.Reply("No stock specified.")
 			}
 		},
 	})
