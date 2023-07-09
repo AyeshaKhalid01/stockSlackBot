@@ -70,7 +70,7 @@ func stocks(input string) []string {
 		log.Fatalf("Input one stock symbol", os.Args[0])
 	}
 
-	apiKey := "" // Replace with your actual API key
+	apiKey := os.Getenv("API_KEY") // Replace with your actual API key
 
 	// Build the API URL
 	url := fmt.Sprintf("%s?function=GLOBAL_QUOTE&symbol=%s&apikey=%s", baseURL, input, apiKey)
